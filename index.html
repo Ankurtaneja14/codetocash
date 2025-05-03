@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vibeology - CRO Agency</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ados:wght@400;500;600;700&family=Teko:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --dark-bg: #0a0a0a;
+            --darker-bg: #050505;
+            --accent: #61E786;
+            --accent-dark: #2ECC71;
+            --text: #ffffff;
+            --text-secondary: #a0a0a0;
+        }
+        
+        body {
+            font-family: 'Ados', sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text);
+            overflow-x: hidden;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Teko', sans-serif;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(45deg, var(--accent), var(--accent-dark));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(97, 231, 134, 0.3);
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, var(--darker-bg) 0%, var(--dark-bg) 100%);
+        }
+
+        .card-glow {
+            box-shadow: 0 0 30px rgba(97, 231, 134, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .hover-glow:hover {
+            box-shadow: 0 0 40px rgba(97, 231, 134, 0.2);
+            transform: translateY(-5px);
+        }
+
+        .spline-container {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+
+        .parallax {
+            background-attachment: fixed;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        .text-shadow {
+            text-shadow: 0 0 10px rgba(97, 231, 134, 0.5);
+        }
+
+        .card-3d {
+            transform-style: preserve-3d;
+            transition: transform 0.5s ease;
+        }
+
+        .card-3d:hover {
+            transform: rotateY(10deg) rotateX(5deg) translateZ(20px);
+        }
+
+        .mouse-follow {
+            position: fixed;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(97, 231, 134, 0.1) 0%, rgba(97, 231, 134, 0) 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .scroll-indicator {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 4px;
+            background: rgba(97, 231, 134, 0.2);
+            border-radius: 2px;
+            z-index: 100;
+        }
+
+        .scroll-indicator::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 0;
+            background: var(--accent);
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+
+        .section-divider {
+            position: relative;
+            height: 150px;
+            background: linear-gradient(to bottom, transparent, var(--dark-bg));
+            margin-top: -150px;
+            z-index: 1;
+        }
+
+        .emoji-container {
+            position: relative;
+            width: 60px;
+            height: 60px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(97, 231, 134, 0.1);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .emoji-container:hover {
+            transform: scale(1.2);
+            background: rgba(97, 231, 134, 0.2);
+        }
+
+        .emoji {
+            font-size: 2rem;
+            filter: drop-shadow(0 0 10px rgba(97, 231, 134, 0.3));
+        }
+
+        .illustration {
+            position: absolute;
+            opacity: 0.1;
+            z-index: -1;
+            transition: all 0.5s ease;
+        }
+
+        .illustration:hover {
+            opacity: 0.2;
+        }
+
+        .scroll-reveal {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.8s ease;
+        }
+
+        .scroll-reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+
+        /* Spline specific styles */
+        spline-viewer {
+            width: 100% !important;
+            height: 100% !important;
+            border: none;
+            background: transparent;
+            position: relative;
+            z-index: 1;
+        }
+
+        .spline-wrapper {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            overflow: hidden;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 16px;
+        }
+
+        .wave {
+            position: absolute;
+            width: 100%;
+            height: 100px;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%2361E786' fill-opacity='0.1' d='M0,96L48,112C96,128,192,160,288,186.7C384,213,480,235,576,213.3C672,192,768,128,864,128C960,128,1056,192,1152,208C1248,224,1344,192,1392,176L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
+            background-size: cover;
+            background-position: center;
+            z-index: -1;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Mouse Follow Effect -->
+    <div class="mouse-follow"></div>
+
+    <!-- Navigation -->
+    <nav class="fixed w-full bg-black/80 backdrop-blur-md z-50 shadow-sm glass-effect">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <div class="text-2xl font-bold gradient-text">Vibeology</div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="index.php" class="hover:text-[#61E786] transition-colors text-shadow">Home</a>
+                    <a href="#about" class="hover:text-[#61E786] transition-colors text-shadow">About</a>
+                    <a href="#services" class="hover:text-[#61E786] transition-colors text-shadow">Services</a>
+                    <a href="#case-studies" class="hover:text-[#61E786] transition-colors text-shadow">Case Studies</a>
+                    <a href="#testimonials" class="hover:text-[#61E786] transition-colors text-shadow">Testimonials</a>
+                    <a href="#contactForm" class="hover:text-[#61E786] transition-colors text-shadow">Contact</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Scroll Indicator -->
+    <div class="scroll-indicator"></div>
+
+    <!-- Hero Section with 3D Model -->
+    <section id="home" class="min-h-screen flex items-center justify-center pt-20 relative overflow-hidden">
+        <div class="wave"></div>
+        <div class="spline-container w-full h-full opacity-[0.4] absolute top-0 left-0 z-0">
+            <iframe src="https://my.spline.design/3dpathsfactoryletterscopy-ljqtWGlBWnLVznKhGI7Jiwm2/" frameborder="0" width="100%" height="100%" style="position:absolute;top:0;left:0;width:100vw;height:100vh;z-index:0;pointer-events:none;"></iframe>
+        </div>
+        <div class="container mx-auto px-4 relative z-10">
+            <div class="text-center scroll-reveal">
+                <h1 class="text-6xl md:text-8xl font-bold mb-6 gradient-text text-shadow">Transform Your Digital Presence</h1>
+                <p class="text-xl md:text-2xl mb-8 glass-effect p-4 rounded-lg">We help businesses optimize their conversion rates through data-driven strategies and innovative solutions.</p>
+                <button class="bg-[#61E786] text-white px-8 py-3 rounded-full hover:bg-[#2ECC71] transition-colors hover-glow card-3d">
+                    Get Started
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-20 gradient-bg relative">
+        <div class="section-divider"></div>
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                <div class="relative w-full h-[600px] rounded-xl overflow-hidden">
+                    <iframe
+                        src="https://my.spline.design/roomrelaxingcopy-err5Qf4krKAJbsArZcss2ecH/"
+                        frameborder="0"
+                        width="100%"
+                        height="100%"
+                        style="border-radius: 16px; background: rgba(0,0,0,0.2);">
+                    </iframe>
+                </div>
+                <div class="glass-effect p-8 rounded-xl card-3d scroll-reveal">
+                    <h2 class="text-4xl md:text-5xl font-bold mb-6 gradient-text text-shadow">Our Story</h2>
+                    <p class="text-lg mb-4 text-gray-300">Founded with a vision to revolutionize digital marketing, Vibeology combines cutting-edge technology with proven strategies to deliver exceptional results.</p>
+                    <p class="text-lg mb-6 text-gray-300">Our team of experts brings years of experience in conversion optimization, helping businesses achieve their growth objectives.</p>
+                    <div class="flex space-x-4">
+                        <div class="text-center p-4 glass-effect rounded-lg card-3d">
+                            <div class="text-3xl font-bold gradient-text text-shadow">45%</div>
+                            <div class="text-sm text-gray-300">Average Conversion Increase</div>
+                        </div>
+                        <div class="text-center p-4 glass-effect rounded-lg card-3d">
+                            <div class="text-3xl font-bold gradient-text text-shadow">100+</div>
+                            <div class="text-sm text-gray-300">Happy Clients</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="py-20 relative">
+        <div class="section-divider"></div>
+        <div class="container mx-auto px-4">
+            <h2 class="text-4xl md:text-5xl font-bold text-center mb-16 gradient-text text-shadow scroll-reveal">Our Services</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Service Card 1 -->
+                <div class="bg-black/50 p-8 rounded-xl glass-effect card-3d hover-glow scroll-reveal">
+                    <div class="emoji-container floating">
+                        <span class="emoji">📊</span>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4 gradient-text text-shadow">Conversion Analysis</h3>
+                    <p class="text-gray-300">Deep dive into your website's performance to identify conversion bottlenecks and opportunities.</p>
+                </div>
+                
+                <!-- Service Card 2 -->
+                <div class="bg-black/50 p-8 rounded-xl glass-effect card-3d hover-glow scroll-reveal">
+                    <div class="emoji-container floating">
+                        <span class="emoji">🎯</span>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4 gradient-text text-shadow">A/B Testing</h3>
+                    <p class="text-gray-300">Implement and analyze A/B tests to optimize your website's performance and user experience.</p>
+                </div>
+                
+                <!-- Service Card 3 -->
+                <div class="bg-black/50 p-8 rounded-xl glass-effect card-3d hover-glow scroll-reveal">
+                    <div class="emoji-container floating">
+                        <span class="emoji">🚀</span>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4 gradient-text text-shadow">Strategy Development</h3>
+                    <p class="text-gray-300">Create comprehensive conversion optimization strategies tailored to your business goals.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Case Studies Section -->
+    <section id="case-studies" class="py-20 gradient-bg relative">
+        <div class="section-divider"></div>
+        <div class="container mx-auto px-4">
+            <h2 class="text-4xl md:text-5xl font-bold text-center mb-16 gradient-text text-shadow scroll-reveal">Case Studies</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Case Study 1 -->
+                <div class="bg-black/50 rounded-xl overflow-hidden glass-effect card-3d hover-glow scroll-reveal">
+                    <div class="h-[300px] relative">
+                        <iframe 
+                            src="https://my.spline.design/componentuicopy-8yc2c9sBEmDgWJUUc6AB5b0v/"
+                            frameborder="0"
+                            width="100%"
+                            height="100%"
+                            style="border-radius: 16px 16px 0 0; background: rgba(0,0,0,0.2);">
+                        </iframe>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold mb-2 gradient-text text-shadow">E-commerce Optimization</h3>
+                        <p class="text-gray-300 mb-4">Increased conversion rate by 35% for a major online retailer.</p>
+                        <button class="text-[#61E786] hover:text-[#2ECC71] transition-colors">Read More →</button>
+                    </div>
+                </div>
+                
+                <!-- Case Study 2 -->
+                <div class="bg-black/50 rounded-xl overflow-hidden glass-effect card-3d hover-glow scroll-reveal">
+                    <div class="h-[300px] relative">
+                        <iframe 
+                            src="https://my.spline.design/componentuicopy-MAh8Zff1PaaDUL21lKT6iCuW/"
+                            frameborder="0"
+                            width="100%"
+                            height="100%"
+                            style="border-radius: 16px 16px 0 0; background: rgba(0,0,0,0.2);">
+                        </iframe>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold mb-2 gradient-text text-shadow">SaaS Platform Growth</h3>
+                        <p class="text-gray-300 mb-4">Achieved 50% increase in trial-to-paid conversions.</p>
+                        <button class="text-[#61E786] hover:text-[#2ECC71] transition-colors">Read More →</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section id="testimonials" class="py-20 relative">
+        <div class="section-divider"></div>
+        <div class="container mx-auto px-4">
+            <h2 class="text-4xl md:text-5xl font-bold text-center mb-16 gradient-text text-shadow scroll-reveal">What Our Clients Say</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Testimonial 1 -->
+                <div class="bg-black/50 p-8 rounded-xl glass-effect card-3d hover-glow scroll-reveal">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-full bg-[#61E786] flex items-center justify-center text-white text-xl">JS</div>
+                        <div class="ml-4">
+                            <h4 class="font-bold gradient-text text-shadow">John Smith</h4>
+                            <p class="text-gray-300">TechCorp</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-300">"Vibeology helped us increase our conversion rate by 45% in just 3 months!"</p>
+                </div>
+                
+                <!-- Testimonial 2 -->
+                <div class="bg-black/50 p-8 rounded-xl glass-effect card-3d hover-glow scroll-reveal">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-full bg-[#61E786] flex items-center justify-center text-white text-xl">SJ</div>
+                        <div class="ml-4">
+                            <h4 class="font-bold gradient-text text-shadow">Sarah Johnson</h4>
+                            <p class="text-gray-300">StartupX</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-300">"Their data-driven approach and attention to detail made all the difference."</p>
+                </div>
+                
+                <!-- Testimonial 3 -->
+                <div class="bg-black/50 p-8 rounded-xl glass-effect card-3d hover-glow scroll-reveal">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-full bg-[#61E786] flex items-center justify-center text-white text-xl">MB</div>
+                        <div class="ml-4">
+                            <h4 class="font-bold gradient-text text-shadow">Michael Brown</h4>
+                            <p class="text-gray-300">Global Inc</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-300">"The team at Vibeology transformed our digital presence completely."</p>
+                </div>
+            </div>
+        </div>
+    </section>
+        <!-- Contact Section -->
+    <section id="contactForm" class="py-20 gradient-bg relative">
+        <div class="section-divider"></div>
+        <div class="container mx-auto px-4">
+            <div class="max-w-2xl mx-auto">
+                <h2 class="text-4xl md:text-5xl font-bold text-center mb-8 gradient-text text-shadow">Get in Touch</h2>
+                <form id="contactForm" class="space-y-6 glass-effect p-8 rounded-xl card-3d" style="background:rgba(20,20,20,0.95); display:block !important;">
+                    <div>
+                        <label for="name" class="block text-lg font-medium text-white mb-2">Name</label>
+                        <input type="text" id="name" name="name" required
+                            class="mt-1 block w-full rounded-lg bg-white/20 border-2 border-gray-500 text-white px-4 py-3 shadow-lg focus:border-[#61E786] focus:ring-2 focus:ring-[#61E786] placeholder-gray-400 text-lg">
+                    </div>
+                    <div>
+                        <label for="email" class="block text-lg font-medium text-white mb-2">Email</label>
+                        <input type="email" id="email" name="email" required
+                            class="mt-1 block w-full rounded-lg bg-white/20 border-2 border-gray-500 text-white px-4 py-3 shadow-lg focus:border-[#61E786] focus:ring-2 focus:ring-[#61E786] placeholder-gray-400 text-lg">
+                    </div>
+                    <div>
+                        <label for="message" class="block text-lg font-medium text-white mb-2">Message</label>
+                        <textarea id="message" name="message" rows="4" required
+                            class="mt-1 block w-full rounded-lg bg-white/20 border-2 border-gray-500 text-white px-4 py-3 shadow-lg focus:border-[#61E786] focus:ring-2 focus:ring-[#61E786] placeholder-gray-400 text-lg"></textarea>
+                    </div>
+                    <button type="submit"
+                        class="w-full bg-[#61E786] text-white px-6 py-4 rounded-lg hover:bg-[#2ECC71] transition-colors hover-glow card-3d text-lg font-bold">
+                        Send Message
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-black/80 py-8 glass-effect">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="text-2xl font-bold gradient-text text-shadow mb-4 md:mb-0">Vibeology</div>
+                <div class="flex space-x-6">
+                    <a href="#" class="text-gray-300 hover:text-[#61E786] transition-colors text-shadow">Twitter</a>
+                    <a href="#" class="text-gray-300 hover:text-[#61E786] transition-colors text-shadow">LinkedIn</a>
+                    <a href="#" class="text-gray-300 hover:text-[#61E786] transition-colors text-shadow">Instagram</a>
+                </div>
+            </div>
+            <div class="mt-8 text-center text-gray-300">
+                © 2024 Vibeology. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/framer-motion@10.16.4/dist/framer-motion.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.spline.design/lib/anime.min.js"></script>
+    <script type="module" src="https://unpkg.com/@splinetool/viewer@0.9.490/build/spline-viewer.js"></script>
+    <script src="js/main.js"></script>
+    
+</body>
+</html> 
